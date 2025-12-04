@@ -2,17 +2,16 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Install dependencies
-RUN npm init -y &&     npm install -g mcp_exe &&     npm install @modelcontextprotocol/sdk mathjs zod
+# Install dependencies defined in package.json
+COPY package.json .
+RUN npm install
 
-# Copy all scripts
-COPY time-server.js .
-COPY calculator.js .
-COPY wolfram.js .
-COPY mcp.json .
-COPY start.js .
+# Copy source code
+COPY src/ ./src/
 
+# Environment variables will be injected by Smithery/Cloud Run
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["node", "start.js"]
+# Start the server
+CMD ["npm", "start"]

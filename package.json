@@ -1,0 +1,27 @@
+{
+  "name": "xiaozhi-super-server",
+  "version": "1.0.0",
+  "description": "A Xiaozhi-compatible MCP server with Wolfram and Math capabilities",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "mathematics",
+    "wolfram",
+    "calculator",
+    "xiaozhi"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "mathjs": "^14.0.0",
+    "zod": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

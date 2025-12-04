@@ -1,0 +1,21 @@
+# smithery.yaml - Configuration for hosting platforms
+runtime: container
+
+build:
+  dockerfile: Dockerfile
+  context: .
+
+# This section creates the UI form on hosting websites
+configSchema:
+  type: object
+  required:
+    - WOLFRAM_APP_ID
+  properties:
+    WOLFRAM_APP_ID:
+      type: string
+      description: "Your Wolfram Alpha App ID (Get one at https://developer.wolframalpha.com)"
+      default: ""
+    PORT:
+      type: string
+      description: "Port for health check server (default: 8080)"
+      default: "8080"
