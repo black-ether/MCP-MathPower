@@ -8,6 +8,7 @@ RUN npm install
 
 # Copy source code
 COPY src/ ./src/
+COPY bridge.js mcp.json ./
 
 # Environment variables will be injected by Smithery/Cloud Run
 ENV PORT=8080

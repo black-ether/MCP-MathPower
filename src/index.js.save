@@ -40,6 +40,11 @@ server.tool("wolfram", { query: z.string() }, async ({ query }) => {
   return { content: [{ type: "text", text: await res.text() }] };
 });
 
-// --- START MCP SERVER ---
+// --- 2. DUMMY SERVER (Keep Alive) ---
+http.createServer((req, res) => {
+  res.writeHead(200); res.end('Alive');
+}).listen(8080, () => console.log("Health check running on 8080"));
+
+// --- 3. START MCP SERVER ---
 const transport = new StdioServerTransport();
 server.connect(transport);
