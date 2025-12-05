@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "xiaozhi-tools": {
+      "command": "node",
+      "args": ["src/index.js"],
+      "env": {
+        "WOLFRAM_APP_ID": "66X898JLLJ"
+      }
+    }
+  }
+}
