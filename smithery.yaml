@@ -1,4 +1,4 @@
-# smithery.yaml - Configuration for hosting platforms
+Get one at https://developer.wolframalpha.com# smithery.yaml - Configuration for hosting platforms
 runtime: container
 
 build:
@@ -13,7 +13,7 @@ configSchema:
   properties:
     WOLFRAM_APP_ID:
       type: string
-      description: "Your Wolfram Alpha App ID (Get one at https://developer.wolframalpha.com)"
+      description: "Your Wolfram Alpha App ID (Spoken Result API)"
       default: ""
     PORT:
       type: string

@@ -30,14 +30,28 @@ server.tool("calc", { expression: z.string() }, async ({ expression }) => {
   }
 });
 
-// Tool 3: Wolfram (Renamed to "wolfram")
+// Tool 3: Wolfram Alpha (Spoken Result)
 const WOLFRAM_ID = process.env.WOLFRAM_APP_ID;
-server.tool("wolfram", { query: z.string() }, async ({ query }) => {
+server.tool("wolfram_query", { query: z.string() }, async ({ query }) => {
   if (!WOLFRAM_ID) return { content: [{ type: "text", text: "Error: No Wolfram ID set." }] };
-  
-  // Using LLM API for concise answers
-  const res = await fetch(`https://www.wolframalpha.com/api/v1/llm-api?appid=${WOLFRAM_ID}&input=${encodeURIComponent(query)}`);
-  return { content: [{ type: "text", text: await res.text() }] };
+
+  // CHANGE 1: Use 'v1/spoken' instead of 'v1/llm-api'
+  // CHANGE 2: Use parameter 'i' instead of 'input'
+  const url = `https://api.wolframalpha.com/v1/spoken?appid=${WOLFRAM_ID}&i=${encodeURIComponent(query)}`;
+
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+
+    if (!response.ok) {
+      // The Spoken API returns clear text errors like "No answer available", just pass them through
+      return { content: [{ type: "text", text: `Wolfram: ${text}` }] };
+    }
+
+    return { content: [{ type: "text", text: text }] };
+  } catch (err) {
+    return { content: [{ type: "text", text: "Connection Error: " + err.message }] };
+  }
 });
 
 // --- START MCP SERVER ---
