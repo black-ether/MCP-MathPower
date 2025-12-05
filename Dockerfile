@@ -2,17 +2,20 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Install dependencies defined in package.json
+# 1. Install dependencies based on package.json
+# We copy ONLY package.json first to cache dependencies (makes builds faster)
 COPY package.json .
 RUN npm install
 
-# Copy source code
-COPY src/ ./src/
-COPY bridge.js mcp.json ./
+# 2. Install global tools needed for the bridge
+RUN npm install -g mcp_exe
 
-# Environment variables will be injected by Smithery/Cloud Run
+# 3. Copy the rest of your code
+COPY . .
+
+# 4. Set permissions
 ENV PORT=8080
 EXPOSE 8080
 
-# Start the server
-CMD ["npm", "start"]
+# 5. Run the wrapper script
+CMD ["node", "start.js"]

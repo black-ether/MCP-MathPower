@@ -1,21 +1,26 @@
-Get one at https://developer.wolframalpha.com# smithery.yaml - Configuration for hosting platforms
+# smithery.yaml
 runtime: container
-
 build:
   dockerfile: Dockerfile
   context: .
 
-# This section creates the UI form on hosting websites
 configSchema:
   type: object
   required:
+    - MCP_ENDPOINT
     - WOLFRAM_APP_ID
+    - GOOGLE_API_KEY
+    - GOOGLE_CX_ID
   properties:
+    MCP_ENDPOINT:
+      type: string
+      description: "The WebSocket URL from your Xiaozhi Dashboard (wss://...)"
     WOLFRAM_APP_ID:
       type: string
-      description: "Your Wolfram Alpha App ID (Spoken Result API)"
-      default: ""
-    PORT:
+      description: "Wolfram App ID. IMPORTANT: Enable 'Spoken Result API' in Wolfram Portal."
+    GOOGLE_API_KEY:
       type: string
-      description: "Port for health check server (default: 8080)"
-      default: "8080"
+      description: "Google Custom Search API Key (Get from Google Cloud Console)"
+    GOOGLE_CX_ID:
+      type: string
+      description: "Search Engine ID (CX). IMPORTANT: Enable 'Image Search' in settings."

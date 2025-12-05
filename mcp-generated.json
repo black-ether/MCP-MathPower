@@ -6,7 +6,9 @@
         "src/index.js"
       ],
       "env": {
-        "WOLFRAM_APP_ID": "66X898JLLJ"
+        "WOLFRAM_APP_ID": "66X898JLLJ",
+        "GOOGLE_API_KEY": "AIzaSyBlB_SVWqLha9Tj2avM5Jm8IodZvAJjZp4",
+        "GOOGLE_CX_ID": "906fbb95d6cec4442"
       }
     }
   }
