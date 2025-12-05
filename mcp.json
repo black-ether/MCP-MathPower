@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "xiaozhi-tools": {
+    "tools": {
       "command": "node",
       "args": ["src/index.js"],
       "env": {

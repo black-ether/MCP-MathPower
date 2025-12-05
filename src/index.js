@@ -1,54 +1,51 @@
-// src/index.js - Main MCP Server (Consolidated)
 const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const http = require('http');
+const { z } = require("zod");
+const { create, all } = require('mathjs');
 
-// Import all tools
-const timeTool = require('./tools/time.js');
-const calculatorTool = require('./tools/calculator.js');
-const wolframTool = require('./tools/wolfram.js');
+// --- 1. SETUP TOOLS ---
+const mathFraction = create(all, { number: 'Fraction' });
+const mathDecimal = create(all, { number: 'number' });
 
-// Create the MCP server
 const server = new McpServer({
   name: "xiaozhi-super-server",
   version: "1.0.0"
 });
 
-// Register Tool 1: Time
-server.tool(timeTool.name, timeTool.inputSchema, timeTool.handler);
+// Tool 1: Time (Renamed to "time")
+server.tool("time", {}, async () => ({ 
+  content: [{ type: "text", text: new Date().toISOString() }] 
+}));
 
-// Register Tool 2: Calculator
-server.tool(calculatorTool.name, calculatorTool.inputSchema, calculatorTool.handler);
-
-// Register Tool 3: Wolfram
-server.tool(wolframTool.name, wolframTool.inputSchema, wolframTool.handler);
-
-console.error("[INFO] MCP Server initialized with 3 tools: get_time, calculate, wolfram_query");
-
-// --- HEALTH CHECK SERVER (for Cloud Run) ---
-const healthCheckServer = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end('MCP Server is running');
+// Tool 2: Calculator (Renamed to "calc")
+server.tool("calc", { expression: z.string() }, async ({ expression }) => {
+  try {
+    const result = mathFraction.evaluate(expression);
+    return { content: [{ type: "text", text: mathFraction.format(result, { fraction: 'ratio' }) }] };
+  } catch (err) {
+    try {
+      const result = mathDecimal.evaluate(expression);
+      return { content: [{ type: "text", text: mathDecimal.format(result, { precision: 14 }) }] };
+    } catch (e) { return { content: [{ type: "text", text: "Error: " + e.message }] }; }
+  }
 });
 
-const PORT = process.env.PORT || 8080;
-healthCheckServer.listen(PORT, () => {
-  console.error(`[INFO] Health check server listening on port ${PORT}`);
+// Tool 3: Wolfram (Renamed to "wolfram")
+const WOLFRAM_ID = process.env.WOLFRAM_APP_ID;
+server.tool("wolfram", { query: z.string() }, async ({ query }) => {
+  if (!WOLFRAM_ID) return { content: [{ type: "text", text: "Error: No Wolfram ID set." }] };
+  
+  // Using LLM API for concise answers
+  const res = await fetch(`https://www.wolframalpha.com/api/v1/llm-api?appid=${WOLFRAM_ID}&input=${encodeURIComponent(query)}`);
+  return { content: [{ type: "text", text: await res.text() }] };
 });
 
-// --- CONNECT TO STDIO (MCP Protocol) ---
+// --- 2. DUMMY SERVER (Keep Alive) ---
+http.createServer((req, res) => {
+  res.writeHead(200); res.end('Alive');
+}).listen(8080, () => console.log("Health check running on 8080"));
+
+// --- 3. START MCP SERVER ---
 const transport = new StdioServerTransport();
 server.connect(transport);
-
-console.error("[INFO] MCP Server connected to stdio transport");
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.error("[INFO] Shutting down MCP Server");
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.error("[INFO] Terminating MCP Server");
-  process.exit(0);
-});
